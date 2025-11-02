@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Weather App by Yash</title>
+<style>
+  body { font-family:'Poppins', sans-serif; text-align:center; background:#87ceeb; color:#333; padding:50px; }
+  #weather { background:white; padding:20px; border-radius:10px; display:inline-block; box-shadow:0 0 10px rgba(0,0,0,0.2); }
+  h2 { margin-bottom:10px; }
+</style>
+</head>
+<body>
+
+<h1>Weather App</h1>
+<div id="weather"><p>Fetching your weather...</p></div>
+
+<script>
+const weatherDiv = document.getElementById('weather');
+
+if (navigator.geolocation) {
+  navigator.geolocation.getCurrentPosition(position => {
+    const lat = position.coords.latitude;
+    const lon = position.coords.longitude;
+
+    // Make sure the API URL is inside quotes
+    fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true`)
+      .then(res => res.json())
+      .then(data => {
+        const weather = data.current_weather;
+        weatherDiv.innerHTML = `
+          <h2>Your Location Weather</h2>
+          <p>🌡 Temperature: ${weather.temperature}°C</p>
+          <p>💨 Wind Speed: ${weather.windspeed} km/h</p>
+          <p>⏱ Time: ${weather.time}</p>
+        `;
+      })
+      .catch(() => {
+        weatherDiv.innerHTML = "<p>Unable to fetch weather data.</p>";
+      });
+  }, () => {
+    weatherDiv.innerHTML = "<p>Location access denied.</p>";
+  });
+} else {
+  weatherDiv.innerHTML = "<p>Geolocation not supported.</p>";
+}
+</script>
+
+</body>
+</html>
